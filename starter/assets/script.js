@@ -1,11 +1,11 @@
-// Get references to HTML elements
+
 const stopWatch = document.getElementById('time');
 const questionElement = document.querySelector('#question-title');
 const answerChoices = document.querySelector('#choices');
 const startButton = document.getElementById('start');
 const nextQuestionButton = document.querySelector('.next-question');
 
-// Initialize variables
+
 let quizData = [];
 let questionIndex = 0;
 let timer;
@@ -13,11 +13,11 @@ let clock = 30;
 stopWatch.textContent = 30
 nextQuestionButton.style.display = `none`
 
-// Function to display a question
+
 function displayQuestion(array, index) {
   questionElement.textContent = array[index].question;
 
-  // Create buttons for each answer
+  
   array[index].answers.forEach((value) => {
     const answerOption = document.createElement('button');
     answerOption.textContent = value;
@@ -25,20 +25,20 @@ function displayQuestion(array, index) {
   });
 }
 
-// Function to remove the previous question's answer choices
+
 function nextQuestion() {
-  answerChoices.innerHTML = ''; // Clear answer choices directly
+  answerChoices.innerHTML = ''; 
 }
 
-// Event listener for the "Start Quiz" button
+
 startButton.addEventListener('click', function () {
-  // Hide the start-screen
+  
   document.getElementById('start-screen').classList.add('hide');
   
-  // Display the questions
+  
   document.getElementById('questions').classList.remove('hide');
 
-  // Populate quizData before displaying questions
+ 
   quizData = [
     {
       question: 'What is the result of true && false?',
@@ -77,15 +77,15 @@ startButton.addEventListener('click', function () {
     },
   ];
 
-  // Display the first question (now that quizData has data)
+  
   displayQuestion(quizData, questionIndex);
 
-  // Set up the timer
+  
   timer = setInterval(() => {
     stopWatch.textContent = clock;
     clock--;
 
-    // Check if time is up or there are no more questions
+    
     if (clock < 0 || questionIndex >= quizData.length) {
       clearInterval(timer);
       stopWatch.textContent = 'Time is up!';
@@ -94,7 +94,7 @@ startButton.addEventListener('click', function () {
   }, 1000);
 });
 
-// Event listener for answer choices
+
 answerChoices.addEventListener('click', (e) => {
     const currentQuestion = quizData[questionIndex];
   
@@ -110,7 +110,7 @@ answerChoices.addEventListener('click', (e) => {
           clock -= 5;
         }
   
-        // Update the selectedAnswer property
+       
         currentQuestion.selectedAnswer = e.target.textContent;
   
         setTimeout(() => {
@@ -127,40 +127,39 @@ answerChoices.addEventListener('click', (e) => {
     }
   });
   
-  // Function to display feedback message
+
   function displayFeedback(message) {
     const feedbackElement = document.getElementById('feedback');
     feedbackElement.textContent = message;
   
-    // You can remove the feedback message after a certain time if desired
+    
     setTimeout(() => {
       feedbackElement.textContent = '';
-    }, 2000); // Remove the feedback after 2 seconds (adjust as needed)
+    }, 2000); 
   }
   
   
   
 
-// Event listener for the form submission
 document.getElementById('score-form').addEventListener('submit', (e) => {
-  e.preventDefault(); // Prevent the default form submission behavior
+  e.preventDefault(); 
 
-  // Get user initials from the input field
+  
   const userInitials = document.getElementById('initials').value;
 
-  // Save user's score with initials to local storage
+  
   saveHighScore(userInitials);
 
   window.location.href = 'highscores.html';
 });
 
-// Function to handle the end of the quiz
+
 function endQuiz() {
   clearInterval(timer);
   displayFinalScore();
 }
 
-// Function to display a message for wrong answers
+
 function wrongAnswer() {
   const wrongA = document.createElement('h3');
   wrongA.style.fontWeight = 'bold';
@@ -168,83 +167,89 @@ function wrongAnswer() {
   answerChoices.appendChild(wrongA);
 }
 
-// Function to display the final score
+
 function displayFinalScore() {
-    answerChoices.innerHTML = ''; // Clear answer choices
+    answerChoices.innerHTML = ''; 
     questionElement.textContent = 'Quiz Completed!';
   
-    const { score, initials } = calculateScore(); // Retrieve score and initials
+    const { score, initials } = calculateScore(); 
     const finalScore = document.createElement('h3');
     finalScore.textContent = `Your Final Score: ${score} / ${quizData.length}`;
     answerChoices.appendChild(finalScore);
   
-    // Display form for user to enter initials
+    
     const scoreForm = document.getElementById('score-form');
     scoreForm.classList.remove('hide');
     
-    // Set the final score in a data attribute for later use
+   
     scoreForm.dataset.finalScore = JSON.stringify({ score, initials });
   }
   
 
-// Function to calculate the score and return an object with score and initials
+
 function calculateScore() {
   let score = 0;
 
-  // Check each question's selected answer against the correct answer
+  
   for (const question of quizData) {
     if (question.selectedAnswer === question.correctAnswer) {
       score++;
     }
   }
 
-  // Get user initials from the input field
+
   const userInitials = document.getElementById('initials').value;
 
   return { score, initials: userInitials };
 }
 
 
-// Function to save high score to local storage
+//Saving high score to local storage
 function saveHighScore(userInitials) {
-    // Fetch existing high scores from local storage
+    
     const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   
-    // Add current user's score to high scores
-    const score = calculateScore();
-    highScores.push({ initials: userInitials, score });
+    
+    const finalScoreData = JSON.parse(document.getElementById('score-form').dataset.finalScore);
   
-    // Sort high scores in descending order
+    
+    highScores.push({ initials: userInitials, score: finalScoreData.score });
+  
+    
     highScores.sort((a, b) => b.score - a.score);
   
-    // Save high scores back to local storage
+    
     localStorage.setItem('highScores', JSON.stringify(highScores));
   }
-
+  
+  document.getElementById('score-form').addEventListener('submit', (e) => {
+    e.preventDefault(); 
+  
+    
+    const userInitials = document.getElementById('initials').value;
+  
+   
+    saveHighScore(userInitials);
+  
+    window.location.href = 'highscores.html';
+  });
+  
   // Function to handle the end of the quiz
   function endQuiz() {
     clearInterval(timer);
     displayFinalScore();
   
-    // Save the high score when the quiz ends
+    
     saveHighScore();
   }
   
   
-  // Example on highscores.html
-  const scoreForm = document.getElementById('score-form');
-  const finalScoreData = JSON.parse(scoreForm.dataset.finalScore);
-  
-  console.log(`User ${finalScoreData.initials} scored ${finalScoreData.score}`);
-  
-  // Fetch high scores from local storage and display them on highscores.html
   document.addEventListener('DOMContentLoaded', function () {
     const highScoresList = document.getElementById('highscores');
   
-    // Fetch high scores from local storage
+
     const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   
-    // Display each high score in the list
     highScores.forEach((scoreData, index) => {
       const listItem = document.createElement('li');
       listItem.textContent = `#${index + 1}: ${scoreData.initials} - ${scoreData.score}`;
@@ -254,11 +259,11 @@ function saveHighScore(userInitials) {
     // Event listener to clear high scores
     const clearButton = document.getElementById('clear');
     clearButton.addEventListener('click', function () {
-      // Clear high scores from local storage
       localStorage.removeItem('highScores');
   
-      // Clear the displayed high scores
+      
       highScoresList.innerHTML = '';
     });
   });
+  
   
