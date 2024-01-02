@@ -15,15 +15,15 @@ N/A
 
 ## Technologies utilised
 
-- HTML5
-- CSS3
+- HTML 5
+- CSS 3
 - Javascript 
 
 ## Usage
 
-This webpage is designed as an interactive quiz game that anyone can play to test out their coding knowledge. Compete with your friends to see who can score the highest in this quiz. [here]()
+This webpage is designed as an interactive quiz game that anyone can play to test out their coding knowledge. Compete with your friends to see who can score the highest in this quiz. [here](https://abduelamin.github.io/Quiz-Game/)
 
-![Webpage screenshot]()
+![quiz image](https://github.com/abduelamin/Quiz-Game/assets/149680577/1fe7ab5e-62fd-4b15-a56d-da4668eaa5d6)
 
 ## Contributing
 
