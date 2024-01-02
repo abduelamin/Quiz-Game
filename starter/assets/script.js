@@ -1,4 +1,3 @@
-
 const stopWatch = document.getElementById('time');
 const questionElement = document.querySelector('#question-title');
 const answerChoices = document.querySelector('#choices');
@@ -204,66 +203,113 @@ function calculateScore() {
 }
 
 
-//Saving high score to local storage
-function saveHighScore(userInitials) {
+
+// form submission
+document.getElementById('score-form').addEventListener('submit', (e) => {
+    e.preventDefault(); 
+  // This prevents the normal behaviour of the form. This is very important tool to add to your toolbox
+    
+    const userInitials = document.getElementById('initials').value;
+  
+    saveHighScore(userInitials);
+  
+    // Redirects page to highscores.html
+    window.location.href = 'highscores.html';
+  });
+  
+  function endQuiz() {
+    clearInterval(timer);
+    displayFinalScore();
+  }
+  
+  //  Final score
+  function displayFinalScore() {
+    answerChoices.innerHTML = ''; 
+    questionElement.textContent = 'Quiz Completed!';
+  
+    const { score } = calculateScore(); 
+    const finalScore = document.createElement('h3');
+    finalScore.textContent = `Your Final Score: ${score} / ${quizData.length}`;
+    answerChoices.appendChild(finalScore);
+  
+
+    const scoreForm = document.getElementById('score-form');
+    scoreForm.classList.remove('hide');
+  
+    scoreForm.dataset.finalScore = JSON.stringify({ score });
+  }
+  
+  // save high score to local storage
+  function saveHighScore(userInitials) {
     
     const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   
     
     const finalScoreData = JSON.parse(document.getElementById('score-form').dataset.finalScore);
   
-    
+   
     highScores.push({ initials: userInitials, score: finalScoreData.score });
   
-    
+   
     highScores.sort((a, b) => b.score - a.score);
   
     
     localStorage.setItem('highScores', JSON.stringify(highScores));
   }
   
-  document.getElementById('score-form').addEventListener('submit', (e) => {
-    e.preventDefault(); 
+  // highscores.html JavaScript
+
+document.addEventListener('DOMContentLoaded', function () {
+    const highScoresList = document.getElementById('highscores');
+
+    // Fetch high scores from local storage
+    const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+
+    // Display each high score in the list
+    highScores.forEach((scoreData, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `#${index + 1}: ${scoreData.initials} - ${scoreData.score}`;
+        highScoresList.appendChild(listItem);
+    });
+
+   // Event listener for clear highscores button
+    const clearButton = document.getElementById('clear');
+    clearButton.addEventListener('click', function () {
+        
+        localStorage.removeItem('highScores');
+
+        
+        highScoresList.innerHTML = '';
+    });
+});
   
-    
-    const userInitials = document.getElementById('initials').value;
-  
-   
-    saveHighScore(userInitials);
-  
-    window.location.href = 'highscores.html';
-  });
-  
-  // Function to handle the end of the quiz
-  function endQuiz() {
+function endQuiz() {
     clearInterval(timer);
     displayFinalScore();
-  
-    
-    saveHighScore();
   }
   
   
-  document.addEventListener('DOMContentLoaded', function () {
-    const highScoresList = document.getElementById('highscores');
+  function displayFinalScore() {
+    answerChoices.innerHTML = ''; 
+    questionElement.textContent = 'Quiz Completed!';
   
-
-    const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+    const { score } = calculateScore(); 
+    const finalScore = document.createElement('h3');
+    finalScore.textContent = `Your Final Score: ${score} / ${quizData.length}`;
+    answerChoices.appendChild(finalScore);
   
-    highScores.forEach((scoreData, index) => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `#${index + 1}: ${scoreData.initials} - ${scoreData.score}`;
-      highScoresList.appendChild(listItem);
-    });
-  
-    // Event listener to clear high scores
-    const clearButton = document.getElementById('clear');
-    clearButton.addEventListener('click', function () {
-      localStorage.removeItem('highScores');
-  
-      
-      highScoresList.innerHTML = '';
-    });
-  });
-  
-  
+    // creating the form for user input with added validation incase they don't type their initials
+    const scoreForm = document.createElement('form');
+    scoreForm.id = 'score-form';
+    const initialsInput = document.createElement('input');
+    initialsInput.type = 'text';
+    initialsInput.id = 'initials';
+    initialsInput.placeholder = 'Enter your initials';
+    initialsInput.setAttribute('required', true);
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Save Score';
+    scoreForm.appendChild(initialsInput);
+    scoreForm.appendChild(submitButton);
+    answerChoices.appendChild(scoreForm);
+  }
